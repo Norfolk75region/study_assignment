@@ -4,18 +4,17 @@ import csv
 import os
 import sys
 import pandas as pd
-# import тут должна быть библиотечка Python для работы с Excel
+
 
 def download_File_From_Site(link: str, path_to_save: str):
     """
     Скачивает файлы с сайта
-
     :param link: строка содержащая ссылку на файл
     :param path_to_save: строка содержащая путь для сохранения
     :return: ответ сервера
     """
     link = requests.get(link)
-    # в функцию добавить все 3 ссылки
+    print("Файл загружен")
     if link.status_code != 200:
         print("Сообщение: файл отсутствует")
     with open(path_to_save, 'wb') as file:
@@ -60,7 +59,10 @@ if __name__ == '__main__':
        'https://rosstat.gov.ru/storage/mediabank/02-23-02.xlsx',
        'https://rosstat.gov.ru/storage/mediabank/02-23-03.xlsx'] # список файлов для закачки
     #Блок кода для закачки файлов
-   download_File_From_Site('https://rosstat.gov.ru/storage/mediabank/02-23-01.xlsx', 'test.xlsx')
+   n = 0
+   for link in links_for_download:
+       n+=1
+       download_File_From_Site(link, f'str{n}.xlsx')
 
     #Блок кода конвертации полученных файлов
     #КОД

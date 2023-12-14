@@ -7,8 +7,7 @@ import pandas as pd
 
 
 def download_File_From_Site(link: str, path_to_save: str):
-    """
-    Скачивает файлы с сайта
+    """  Скачивает файлы с сайта
     :param link: строка содержащая ссылку на файл
     :param path_to_save: строка содержащая путь для сохранения
     :return: ответ сервера
@@ -23,12 +22,10 @@ def download_File_From_Site(link: str, path_to_save: str):
 
 
 def delete_file(path_to_file: str):
-    """
-    Функция удаления файлов
-
+    """   Функция удаления файлов
     :param path_to_file: путь к удаляемому файлу
     """
-    # Код для удаления
+
     return
 
 
@@ -62,7 +59,7 @@ if __name__ == '__main__':
    n = 0
    for link in links_for_download:
        n+=1
-       download_File_From_Site(link, f'str{n}.xlsx')
+       download_File_From_Site(link, f'file{n}.xlsx')
 
     #Блок кода конвертации полученных файлов
     #КОД

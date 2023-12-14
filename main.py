@@ -2,8 +2,9 @@ import requests
 import datetime
 import csv
 import os
-import pandas
-
+import sys
+import pandas as pd
+# import тут должна быть библиотечка Python для работы с Excel
 
 def download_File_From_Site(link: str, path_to_save: str):
     """
@@ -13,8 +14,13 @@ def download_File_From_Site(link: str, path_to_save: str):
     :param path_to_save: строка содержащая путь для сохранения
     :return: ответ сервера
     """
-    # ТУТ ДОЛЖЕН БЫТЬ КОД ДЛЯ СКАЧКИ ФАЙЛА
-    return
+    link = requests.get(link)
+    # в функцию добавить все 3 ссылки
+    if link.status_code != 200:
+        print("Сообщение: файл отсутствует")
+    with open(path_to_save, 'wb') as file:
+        file.write(link.content)
+    return link
 
 
 def delete_file(path_to_file: str):
@@ -49,15 +55,15 @@ def convert_xlsx_to_csv(path_to_xlsx: str, path_to_csv: str, header: list = [], 
     return
 
 if __name__ == '__main__':
-    links_for_download = [
-        'https://rosstat.gov.ru/storage/mediabank/02-23-01.xlsx',
-        'https://rosstat.gov.ru/storage/mediabank/02-23-02.xlsx',
-        'https://rosstat.gov.ru/storage/mediabank/02-23-03.xlsx'] # список файлов для закачки
-    # Блок кода для закачки файлов
-    # КОД
+   links_for_download = [
+       'https://rosstat.gov.ru/storage/mediabank/02-23-01.xlsx',
+       'https://rosstat.gov.ru/storage/mediabank/02-23-02.xlsx',
+       'https://rosstat.gov.ru/storage/mediabank/02-23-03.xlsx'] # список файлов для закачки
+    #Блок кода для закачки файлов
+   download_File_From_Site('https://rosstat.gov.ru/storage/mediabank/02-23-01.xlsx', 'test.xlsx')
 
     #Блок кода конвертации полученных файлов
-    # КОД
+    #КОД
 
-    # Блок кода удаления скаченных ранее xlsx
-    # КОД
+    #Блок кода удаления скаченных ранее xlsx
+    #КОД

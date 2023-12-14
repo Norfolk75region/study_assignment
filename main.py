@@ -25,7 +25,8 @@ def delete_file(path_to_file: str):
     """   Функция удаления файлов
     :param path_to_file: путь к удаляемому файлу
     """
-
+    os.remove("C:/Users/bykova_ma/PycharmProjects/study_assignment/file1.xlsx")
+    print("Файл file1.xlsx удалён")
     return
 
 
@@ -65,4 +66,4 @@ if __name__ == '__main__':
     #КОД
 
     #Блок кода удаления скаченных ранее xlsx
-    #КОД
+   delete_file("C:/Users/bykova_ma/PycharmProjects/study_assignment/file1.xlsx")

@@ -1,63 +1,154 @@
+from pathlib import Path
+
+import pandas as pd
 import requests
-import datetime
-import csv
-import os
-import pyexcel
 
 
-def download_File_From_Site(link: str, path_to_save: str):
+BASE_DIR = Path(__file__).resolve().parent
+
+RAW_DIR = BASE_DIR / "data" / "raw"
+PROCESSED_DIR = BASE_DIR / "data" / "processed"
+GOLD_DIR = BASE_DIR / "data" / "gold"
+
+
+SOURCES = [
+    {
+        "url": "https://rosstat.gov.ru/storage/mediabank/02-23-01.xlsx",
+        "year": 2023,
+        "period": "январь-июнь",
+    },
+    {
+        "url": "https://rosstat.gov.ru/storage/mediabank/02-23-02.xlsx",
+        "year": 2023,
+        "period": "январь-сентябрь",
+    },
+    {
+        "url": "https://rosstat.gov.ru/storage/mediabank/02-23-03.xlsx",
+        "year": 2023,
+        "period": "январь-декабрь",
+    },
+]
+
+
+def download_file(url: str, path: Path) -> None:
     """
-    Скачивает файлы с сайта
+    Скачать файл по URL и сохранить его локально.
 
-    :param link: строка содержащая ссылку на файл
-    :param path_to_save: строка содержащая путь для сохранения
-    :return: ответ сервера
+    Необходимо предусмотреть:
+    - проверку HTTP-статуса;
+    - обработку ошибок соединения;
+    - отсутствие повторной загрузки существующего файла;
+    - создание директории назначения.
     """
-    # ТУТ ДОЛЖЕН БЫТЬ КОД ДЛЯ СКАЧКИ ФАЙЛА
-    return
+    pass
 
 
-def delete_file(path_to_file: str):
+def read_source_file(path: Path) -> pd.DataFrame:
     """
-    Функция удаления файлов
+    Прочитать исходный Excel-файл.
 
-    :param path_to_file: путь к удаляемому файлу
+    Необходимо самостоятельно определить:
+    - нужный лист;
+    - структуру заголовков;
+    - начало и конец таблицы;
+    - способ формирования названий колонок.
     """
-    # Код для удаления
-    return
+    pass
 
 
-def convert_xlsx_to_csv(path_to_xlsx: str, path_to_csv: str, header: list = [], separator: str = ";",
-                        sheet_number: int = 1, first_row: int = 0, last_row: int = 0,
-                        first_column: int = 0, last_column: str = 0, encoding: str = 'utf-8'):
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Функция конвертирования xlsx файла в csv с учётом листа для конвертирования, ячеек которые нужно выбрать из файла,
-    заголовка для ячеек (если нужно)
+    Очистить и нормализовать данные.
 
-    :param path_to_xlsx: путь к эксель файлу
-    :param path_to_csv: путь к csv файлу для сохранения
-    :param header: список заголовка
-    :param separator: разделитель в csv файле (по умолчанию ';')
-    :param sheet_number: номер листа xlsx файла
-    :param first_row: первая строка xlsx файла
-    :param last_row: последняя строка xlsx файла
-    :param first_column: первая колона xlsx файла
-    :param last_column: последняя колона xlsx файла
-    :param encoding: кодировка итогового csv файла
+    Необходимо обработать:
+    - числовые значения;
+    - пропуски;
+    - специальные значения;
+    - названия регионов;
+    - даты и периоды;
+    - названия колонок.
     """
-    # КОД ДЛЯ КОНВЕРТАЦИИ
-    return
+    pass
 
-if __name__ == '__main__':
-    links_for_download = [
-        'https://rosstat.gov.ru/storage/mediabank/02-23-01.xlsx',
-        'https://rosstat.gov.ru/storage/mediabank/02-23-02.xlsx',
-        'https://rosstat.gov.ru/storage/mediabank/02-23-03.xlsx'] # список файлов для закачки
-    # Блок кода для закачки файлов
-    # КОД
 
-    #Блок кода конвертации полученных файлов
-    # КОД
+def transform_data(
+    df: pd.DataFrame,
+    year: int,
+    period: str,
+) -> pd.DataFrame:
+    """
+    Привести данные к структуре, необходимой для формирования gold-слоя.
+    """
+    pass
 
-    # Блок кода удаления скаченных ранее xlsx
-    # КОД
+
+def build_gold_table(data: list[pd.DataFrame]) -> pd.DataFrame:
+    """
+    Объединить данные всех источников и сформировать gold_salary.
+
+    Необходимо самостоятельно определить:
+    - гранулярность;
+    - ключ;
+    - правила дедупликации;
+    - состав итоговых полей.
+    """
+    pass
+
+
+def validate_gold_table(df: pd.DataFrame) -> None:
+    """
+    Проверить качество итоговой таблицы.
+
+    Минимальные проверки:
+    - уникальность ключа;
+    - обязательные поля;
+    - типы данных;
+    - корректность числовых показателей;
+    - отсутствие неожиданных дубликатов.
+    """
+    pass
+
+
+def main() -> None:
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    GOLD_DIR.mkdir(parents=True, exist_ok=True)
+
+    processed_data = []
+
+    for source in SOURCES:
+        filename = Path(source["url"]).name
+        raw_file = RAW_DIR / filename
+
+        download_file(
+            url=source["url"],
+            path=raw_file,
+        )
+
+        df = read_source_file(raw_file)
+
+        df = clean_data(df)
+
+        df = transform_data(
+            df=df,
+            year=source["year"],
+            period=source["period"],
+        )
+
+        processed_data.append(df)
+
+    gold = build_gold_table(processed_data)
+
+    validate_gold_table(gold)
+
+    gold_path = GOLD_DIR / "gold_salary.csv"
+    gold.to_csv(
+        gold_path,
+        index=False,
+        sep=";",
+        encoding="utf-8",
+    )
+
+
+if __name__ == "__main__":
+    main()
